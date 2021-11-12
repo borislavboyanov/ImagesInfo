@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.urls import path
-from .views import create
+from .views import create, check_images, upload_images
 
 urlpatterns = [
-    path('', create)
+    path('', create),
+    path('check', check_images),
+    path('upload', upload_images)
 ]

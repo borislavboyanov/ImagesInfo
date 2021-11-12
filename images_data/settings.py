@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab',
     'rest_framework',
     'images'
 ]
@@ -83,8 +84,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'images',
         'USER': 'postgres',
-        'PASSWORD': 'docker',
-        'HOST': 'db',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',
         'PORT': '5432'
     }
 }
@@ -132,3 +133,7 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CRONJOBS = [
+    ('* * * * *', 'images.crons.work_with_images')
+]
