@@ -1,8 +1,10 @@
+from django.core import serializers
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import io
 import json
+import random
 import re
 import requests
 import uuid
@@ -24,8 +26,9 @@ def create(request):
         return JsonResponse(json.dumps({'response': 'Sorry, something went wrong.'}), safe = False)
 
     image = requests.get(url).content
+    fake_file = io.BytesIO(image)
 
-    data = json.loads(generate_image_data(image).content)
+    data = json.loads(generate_image_data(fake_file.read()).content)
     image_data = ImageData(sha1=data['sha1'], name=None, width=data['width'], height=data['height'], type=data['type'], user=None)
     image_data.save()
 
@@ -43,15 +46,19 @@ def upload_images(request):
     for f in files:
         handle_uploaded_file(f, user)
 
-    return JsonResponse(json.dumps({'url': 'http://localhost/' + user.url}))
+    return JsonResponse(json.dumps({'url': 'http://localhost:8000/check/' + str(user.url)}), safe = False)
 
-def check_images(request):
+def check_images(request, url):
     try:
-        user = User.objects.get(url=request.GET['url'])
+        user = User.objects.get(url=url)
     except:
         return JsonResponse(json.dumps({'response': "This URL doesn't exist!"}), safe = False)
 
     for image in user.imagedata_set.all():
         if image.sha1 == None:
             return JsonResponse(json.dumps({'response': "Your images are not ready. Please, come again later."}), safe = False)
-    return JsonResponse(json.dumps(user.imagedata_set.all()), safe = False)
+
+    images = json.loads(serializers.serialize('json', user.imagedata_set.all()))
+    for index, image in enumerate(images):
+        images[index] = image['fields']
+    return JsonResponse(images, safe = False)

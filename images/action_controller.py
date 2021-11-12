@@ -7,11 +7,8 @@ import svglib.svglib as svg
 from .models import ImageData
 
 def generate_image_data(image):
-    fake_file = io.BytesIO(image)
-    file = svg.load_svg_file(fake_file)
-    print('FILE:', fake_file)
+    file = svg.load_svg_file(image)
     if file == None:
-        print('TEST')
         parser = ImageFile.Parser()
         parser.feed(image)
         if hasattr(parser.image, 'format'):

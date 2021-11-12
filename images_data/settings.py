@@ -135,5 +135,5 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRONJOBS = [
-    ('* * * * *', 'images.crons.work_with_images')
+    ('* * * * *', 'images.cron.work_with_images')
 ]
