@@ -3,5 +3,5 @@ psycopg2
 djangorestframework
 Pillow
 requests
-django-crontab
+django-extensions
 svglib

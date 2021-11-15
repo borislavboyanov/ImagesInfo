@@ -14,9 +14,9 @@ services:
       - POSTGRES_DB=images
   web:
     build: .
-    command: bash -c "pip3 install -r requirements.txt &&
-                      apt-get update && apt-get -y install cron && python3 manage.py makemigrations &&
-                      python3 manage.py migrate && python3 manage.py crontab add &&
+    command: bash -c "pip3 install -r requirements.txt
+                      && python3 manage.py makemigrations &&
+                      python3 manage.py migrate &&
                       python3 manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/code

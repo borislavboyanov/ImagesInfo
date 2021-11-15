@@ -8,10 +8,12 @@ import random
 import re
 import requests
 import uuid
-from .action_controller import generate_image_data, handle_uploaded_file
+from .action_controller import generate_image_data, handle_uploaded_file, NotAnImage
 from .models import ImageData
 from .models import User
 # Create your views here.
+
+
 
 @csrf_exempt
 def create(request):
@@ -20,8 +22,12 @@ def create(request):
         if 'http://' not in url and 'https://' not in url:
             url = 'http://' + url
         head = requests.head(url)
+        if 'image' not in head.headers['Content-Type']:
+            raise NotAnImage
     except requests.exceptions.URLRequired:
         return JsonResponse({'response': 'Sorry, the provided string is not a URL.', 'status': 400}, safe = False)
+    except NotAnImage as e:
+        return JsonResponse({'response': e.message, 'status': 400}, safe = False)
     except:
         return JsonResponse({'response': 'Sorry, something went wrong.', 'status': 400}, safe = False)
 
@@ -38,10 +44,10 @@ def create(request):
 def upload_images(request):
     image_formats = ('jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'svg', 'ppm', 'pgm', 'pbm', 'pnm')
     files = request.FILES.getlist('files')
-    for f in files:
+    for index, f in enumerate(files):
         if f.name.split('.')[-1] not in image_formats or len(f.name.split('.')) == 1:
             #return JsonResponse({'Error': 'One or more of the uploaded files is not an image.'}, safe = False)
-            continue
+            del files[index]
     user = User(url = uuid.uuid1(random.randint(0, 2**48 - 1)))
     user.save()
     for f in files:
