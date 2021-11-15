@@ -21,9 +21,9 @@ def create(request):
             url = 'http://' + url
         head = requests.head(url)
     except requests.exceptions.URLRequired:
-        return JsonResponse(json.dumps({'response': 'Sorry, the provided string is not a URL.'}), safe = False)
+        return JsonResponse({'response': 'Sorry, the provided string is not a URL.', 'status': 400}, safe = False)
     except:
-        return JsonResponse(json.dumps({'response': 'Sorry, something went wrong.'}), safe = False)
+        return JsonResponse({'response': 'Sorry, something went wrong.', 'status': 400}, safe = False)
 
     image = requests.get(url).content
     fake_file = io.BytesIO(image)
@@ -32,7 +32,7 @@ def create(request):
     image_data = ImageData(sha1=data['sha1'], name=None, width=data['width'], height=data['height'], type=data['type'], user=None)
     image_data.save()
 
-    return JsonResponse(json.dumps({'response': 'Success'}), safe = False)
+    return JsonResponse({'response': 'Success', 'status': 200}, safe = False)
 
 @csrf_exempt
 def upload_images(request):
@@ -40,23 +40,24 @@ def upload_images(request):
     files = request.FILES.getlist('files')
     for f in files:
         if f.name.split('.')[-1] not in image_formats or len(f.name.split('.')) == 1:
-            return JsonResponse(json.dumps({'Error': 'One or more of the uploaded files is not an image.'}), safe = False)
+            #return JsonResponse({'Error': 'One or more of the uploaded files is not an image.'}, safe = False)
+            continue
     user = User(url = uuid.uuid1(random.randint(0, 2**48 - 1)))
     user.save()
     for f in files:
         handle_uploaded_file(f, user)
 
-    return JsonResponse(json.dumps({'url': 'http://localhost:8000/check/' + str(user.url)}), safe = False)
+    return JsonResponse({'url': 'http://localhost:8000/check/' + str(user.url), 'status': 200}, safe = False)
 
 def check_images(request, url):
     try:
         user = User.objects.get(url=url)
     except:
-        return JsonResponse(json.dumps({'response': "This URL doesn't exist!"}), safe = False)
+        return JsonResponse({'response': "This URL doesn't exist!", 'status': 400}, safe = False)
 
     for image in user.imagedata_set.all():
         if image.sha1 == None:
-            return JsonResponse(json.dumps({'response': "Your images are not ready. Please, come again later."}), safe = False)
+            return JsonResponse({'response': "Your images are not ready. Please, come again later.", 'status': 200}, safe = False)
 
     images = json.loads(serializers.serialize('json', user.imagedata_set.all()))
     for index, image in enumerate(images):

@@ -8,6 +8,7 @@ services:
     volumes:
       - ./pgdata:/var/lib/postgresql/data
       - ./image_files:/image_files
+      - ./create_db.sql://docker-entrypoint-initdb.d/create_db.sql
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=docker
@@ -15,10 +16,10 @@ services:
   web:
     build: .
     command: bash -c "python3 manage.py makemigrations &&
-                      python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
+                      python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000 &&
+                      python3 manage.py crontab add"
     volumes:
       - .:/code
-      - ./image_files:/image_files
     ports:
       - "8000:8000"
     depends_on:

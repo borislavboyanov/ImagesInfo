@@ -1,8 +1,7 @@
 Django>=3.0,<4.0
-psycopg2-binary>=2.8
+psycopg2
 djangorestframework
 Pillow
 requests
 django-crontab
-pymysql
 svglib

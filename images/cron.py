@@ -11,8 +11,13 @@ def work_with_images():
             file = open(image.name, 'rb+')
         except:
             continue
-        data = json.loads(generate_image_data(file.read()).content)
-        os.remove(image.name)
+        data = generate_image_data(file.read())
+        data = json.loads(data.content)
+        name = image.name
+        if data['status'] == 400:
+            image.delete()
+            os.remove(name)
+            continue
         image.name = None
         image.sha1 = data['sha1']
         image.width = data['width']
@@ -21,3 +26,4 @@ def work_with_images():
 
         image.save()
         file.close()
+        os.remove(name)

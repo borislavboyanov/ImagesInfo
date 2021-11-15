@@ -15,17 +15,16 @@ def generate_image_data(image):
             image_type = parser.image.format.lower()
             width, height = parser.image.size
         else:
-            return JsonResponse(json.dumps({'response': 'Sorry, the provided link is not of an image.'}), safe = False)
+            return JsonResponse({'response': 'Sorry, the provided link is not of an image.', 'status': 400}, safe = False)
     else:
         image_type = 'svg'
-        drawing = svg.svg2rlg(fake_file)
-        print('WIDTH:', drawing)
+        drawing = svg.svg2rlg(image)
         width = int(drawing.width)
         height = int(drawing.height)
 
     sha1 = hashlib.sha1(image).hexdigest()
 
-    return JsonResponse({'sha1': sha1, 'width': width, 'height': height, 'type': image_type}, safe = False)
+    return JsonResponse({'sha1': sha1, 'width': width, 'height': height, 'type': image_type, 'status': 200}, safe = False)
 
 def handle_uploaded_file(f, user):
     with open(f.name, 'wb+') as destination:
