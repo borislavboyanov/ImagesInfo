@@ -69,3 +69,9 @@ def check_images(request, url):
     for index, image in enumerate(images):
         images[index] = image['fields']
     return JsonResponse(images, safe = False)
+
+def last100(request):
+    images = json.loads(serializers.serialize('json', ImageData.objects.all().order_by('-id')[:100]))
+    for index, image in enumerate(images):
+        images[index] = image['fields']
+    return JsonResponse(images, safe = False)
