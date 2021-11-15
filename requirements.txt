@@ -5,3 +5,4 @@ Pillow
 requests
 django-extensions
 svglib
+os
