@@ -28,7 +28,7 @@ def create(request):
     image = requests.get(url).content
     fake_file = io.BytesIO(image)
 
-    data = json.loads(generate_image_data(fake_file.read()).content)
+    data = json.loads(generate_image_data(fake_file).content)
     image_data = ImageData(sha1=data['sha1'], name=None, width=data['width'], height=data['height'], type=data['type'], user=None)
     image_data.save()
 

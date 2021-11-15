@@ -7,8 +7,9 @@ import svglib.svglib as svg
 from .models import ImageData
 
 def generate_image_data(image):
-    file = svg.load_svg_file(image)
-    if file == None:
+    file = svg.svg2rlg(image)
+    print('FILEEEEEEEEEEEEEEE', file)
+    if not hasattr(file, 'height'):
         parser = ImageFile.Parser()
         parser.feed(image)
         if hasattr(parser.image, 'format'):
@@ -18,10 +19,13 @@ def generate_image_data(image):
             return JsonResponse({'response': 'Sorry, the provided link is not of an image.', 'status': 400}, safe = False)
     else:
         image_type = 'svg'
-        drawing = svg.svg2rlg(image)
-        width = int(drawing.width)
-        height = int(drawing.height)
+        width = int(file.width)
+        height = int(file.height)
 
+    image = image.read()
+    if type(image) != bytes:
+        print('TYPEEEEEEE', type(image))
+        image = image.encode()
     sha1 = hashlib.sha1(image).hexdigest()
 
     return JsonResponse({'sha1': sha1, 'width': width, 'height': height, 'type': image_type, 'status': 200}, safe = False)

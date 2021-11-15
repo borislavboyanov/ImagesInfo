@@ -11,7 +11,7 @@ def work_with_images():
             file = open(image.name, 'rb+')
         except:
             continue
-        data = generate_image_data(file.read())
+        data = generate_image_data(file)
         data = json.loads(data.content)
         name = image.name
         if data['status'] == 400:
