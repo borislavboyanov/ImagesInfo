@@ -48,7 +48,10 @@ def process_images(sender, instance, created, **kwargs):
         instance.width = data['width']
         instance.height = data['height']
         instance.type = data['type']
-        instance.save()
+        try:
+            instance.save()
+        except:
+            pass
 
         file.close()
         os.remove('./image_files/' + name)

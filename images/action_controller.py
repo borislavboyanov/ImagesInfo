@@ -41,4 +41,7 @@ def handle_uploaded_file(f, user):
     with open('./image_files/' + f.name, 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
-        image = user.imagedata_set.create(sha1=None, name=f.name, width=None, height=None, type=None)
+        try:
+            image = user.imagedata_set.create(sha1=None, name=f.name, width=None, height=None, type=None)
+        except:
+            return JsonResponse({'response': 'Sorry, the database is not available at the moment.', 'status': 400}, safe = False)

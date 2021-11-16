@@ -49,7 +49,10 @@ def upload_images(request):
             #return JsonResponse({'Error': 'One or more of the uploaded files is not an image.'}, safe = False)
             del files[index]
     user = User(url = uuid.uuid1(random.randint(0, 2**48 - 1)))
-    user.save()
+    try:
+        user.save()
+    except:
+        return JsonResponse({'response': 'Sorry, the database is not available at the moment.', 'status': 400}, safe = False)
     for f in files:
         handle_uploaded_file(f, user)
 
